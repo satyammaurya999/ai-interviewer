@@ -129,6 +129,89 @@ export default function SessionResultPage() {
         </div>
       </div>
 
+      {/* Structured Interview Feedback */}
+      {(session.overallAssessment ||
+        session.curriculumDaysAssessed?.length ||
+        session.demonstratedStrongTopics?.length ||
+        session.needsImprovementTopics?.length ||
+        session.technicalReasoning ||
+        session.actionableRecommendations?.length) && (
+        <div className="card p-6 space-y-5">
+          <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+            <Star className="w-5 h-5 text-brand-400" /> Structured Interview Feedback
+          </h3>
+
+          {session.overallAssessment && (
+            <div>
+              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wide">Overall Assessment</p>
+              <p className="text-slate-300 text-sm leading-relaxed">{session.overallAssessment}</p>
+            </div>
+          )}
+
+          {session.curriculumDaysAssessed?.length > 0 && (
+            <div>
+              <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide">Curriculum Days Assessed</p>
+              <div className="flex flex-wrap gap-2">
+                {session.curriculumDaysAssessed.map((d, i) => (
+                  <span key={i} className="badge badge-slate">{d}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {session.demonstratedStrongTopics?.length > 0 && (
+              <div>
+                <p className="text-xs text-slate-500 mb-1 uppercase tracking-wide">Demonstrated Strong Topics</p>
+                <ul className="space-y-1.5">
+                  {session.demonstratedStrongTopics.map((t, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {session.needsImprovementTopics?.length > 0 && (
+              <div>
+                <p className="text-xs text-slate-500 mb-1 uppercase tracking-wide">Topics Needing Improvement</p>
+                <ul className="space-y-1.5">
+                  {session.needsImprovementTopics.map((t, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                      <Lightbulb className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {session.technicalReasoning && (
+            <div>
+              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wide">Technical Reasoning</p>
+              <p className="text-slate-300 text-sm leading-relaxed">{session.technicalReasoning}</p>
+            </div>
+          )}
+
+          {session.actionableRecommendations?.length > 0 && (
+            <div>
+              <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide">Actionable Recommendations</p>
+              <ul className="space-y-2">
+                {session.actionableRecommendations.map((r, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    <span className="w-6 h-6 bg-brand-600/20 text-brand-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</span>
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {radarData.length > 2 && (

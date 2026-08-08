@@ -2,6 +2,8 @@ const Interview = require('../models/Interview.model');
 const Resume = require('../models/Resume.model');
 const AppError = require('../utils/AppError');
 const { generateInterviewQuestions } = require('../services/ai.service');
+const { getCandidateProfile } = require('../services/candidateProfile.service');
+const { loadCurriculum } = require('../services/curriculum.service');
 
 // ─── POST /api/interviews ─────────────────────────────────────────
 exports.createInterview = async (req, res, next) => {
@@ -13,6 +15,7 @@ exports.createInterview = async (req, res, next) => {
     questionTypes,
     numberOfQuestions,
     resumeId,
+    candidateId,
   } = req.body;
 
   const interview = await Interview.create({
@@ -24,6 +27,7 @@ exports.createInterview = async (req, res, next) => {
     questionTypes,
     numberOfQuestions,
     resumeId: resumeId || null,
+    candidateId: candidateId || null,
     status: 'draft',
     generationStatus: 'pending',
   });
@@ -47,6 +51,14 @@ exports.generateQuestions = async (req, res, next) => {
     resumeText = resume?.extractedText ?? null;
   }
 
+  // Load candidate profile if candidate is linked
+  const candidateProfile = interview.candidateId
+    ? await getCandidateProfile(interview.candidateId)
+    : null;
+
+  // Load the full curriculum context for the interview
+  const curriculum = loadCurriculum();
+
   // Update status
   interview.generationStatus = 'generating';
   await interview.save();
@@ -58,6 +70,8 @@ exports.generateQuestions = async (req, res, next) => {
       experienceLevel: interview.experienceLevel,
       numberOfQuestions: interview.numberOfQuestions,
       resumeText,
+      candidateProfile,
+      curriculum,
     });
 
     interview.questions = questions;

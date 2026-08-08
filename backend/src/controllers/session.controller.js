@@ -3,6 +3,8 @@ const Interview = require('../models/Interview.model');
 const User = require('../models/User.model');
 const AppError = require('../utils/AppError');
 const { evaluateAnswer, generateOverallFeedback } = require('../services/ai.service');
+const { getCandidateProfile } = require('../services/candidateProfile.service');
+const { loadCurriculum } = require('../services/curriculum.service');
 
 // ─── POST /api/sessions/start ─────────────────────────────────────
 exports.startSession = async (req, res, next) => {
@@ -119,9 +121,18 @@ exports.completeSession = async (req, res, next) => {
   // ── Generate overall feedback ──────────────────────────────────
   let overallData = {};
   try {
+    const candidateProfile = interview.candidateId
+      ? await getCandidateProfile(interview.candidateId)
+      : null;
+
     overallData = await generateOverallFeedback({
       jobTitle: interview.jobTitle,
+      experienceLevel: interview.experienceLevel,
       answers: session.answers,
+      liveHistory: session.liveHistory,
+      plannedQuestions: interview.questions,
+      candidateProfile,
+      curriculum: loadCurriculum(),
     });
   } catch {
     overallData = {};
@@ -134,6 +145,14 @@ exports.completeSession = async (req, res, next) => {
   session.strengths = overallData.strengths ?? [];
   session.areasForImprovement = overallData.weaknesses ?? [];
   session.recommendedResources = overallData.improvementTips ?? [];
+
+  // Structured feedback fields
+  session.overallAssessment = overallData.overallAssessment ?? null;
+  session.curriculumDaysAssessed = overallData.curriculumDaysAssessed ?? [];
+  session.demonstratedStrongTopics = overallData.demonstratedStrongTopics ?? [];
+  session.needsImprovementTopics = overallData.needsImprovementTopics ?? [];
+  session.technicalReasoning = overallData.technicalReasoning ?? null;
+  session.actionableRecommendations = overallData.actionableRecommendations ?? [];
   session.status = 'completed';
   session.completedAt = new Date();
   session.totalTimeTaken = session.answers.reduce((s, a) => s + (a.timeTaken || 0), 0);

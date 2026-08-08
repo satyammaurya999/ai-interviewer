@@ -14,6 +14,30 @@ const answerSchema = new mongoose.Schema({
   skipped: { type: Boolean, default: false },
 });
 
+// One message within the live (Socket.io) follow-up conversation
+const liveExchangeSchema = new mongoose.Schema(
+  {
+    questionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+    },
+    role: {
+      type: String,
+      enum: ['user', 'assistant'],
+      required: true,
+    },
+    content: {
+      type: String,
+      default: '',
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const sessionSchema = new mongoose.Schema(
   {
     userId: {
@@ -28,6 +52,10 @@ const sessionSchema = new mongoose.Schema(
       required: true,
     },
     answers: [answerSchema],
+    liveHistory: {
+      type: [liveExchangeSchema],
+      default: [],
+    },
     status: {
       type: String,
       enum: ['started', 'in_progress', 'completed', 'abandoned'],
@@ -58,6 +86,20 @@ const sessionSchema = new mongoose.Schema(
     strengths: [String],
     areasForImprovement: [String],
     recommendedResources: [String],
+
+    // Structured final feedback (AI Cohort challenge)
+    overallAssessment: {
+      type: String,
+      default: null,
+    },
+    curriculumDaysAssessed: [String],
+    demonstratedStrongTopics: [String],
+    needsImprovementTopics: [String],
+    technicalReasoning: {
+      type: String,
+      default: null,
+    },
+    actionableRecommendations: [String],
   },
   { timestamps: true }
 );

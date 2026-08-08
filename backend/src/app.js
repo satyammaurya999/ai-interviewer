@@ -24,6 +24,7 @@ const userRoutes      = require('./routes/user.routes');
 const resumeRoutes    = require('./routes/resume.routes');
 const interviewRoutes = require('./routes/interview.routes');
 const sessionRoutes   = require('./routes/session.routes');
+const interviewChatRoutes = require('./routes/interviewChat.routes');
 const jobsRoutes      = require('./routes/jobs.routes');
 const adminRoutes     = require('./routes/admin.routes');
 
@@ -105,6 +106,9 @@ app.use('/api/interviews', interviewRoutes);
 app.use('/api/sessions',   sessionRoutes);
 app.use('/api/jobs',       jobsRoutes);
 app.use('/api/admin',      adminRoutes);
+
+// Challenge adapter: sessionId-keyed conversational interview (no auth)
+app.use('/api/interview',  interviewChatRoutes);
 
 // ─── 404 Catch-all ────────────────────────────────────────────────
 app.use('*', (req, res) =>

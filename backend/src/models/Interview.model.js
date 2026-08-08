@@ -13,6 +13,12 @@ const questionSchema = new mongoose.Schema({
     default: 'medium',
   },
   expectedKeywords: [String],
+  curriculumDay: {
+    type: Number,
+    min: 1,
+    max: 31,
+    default: null,
+  },
   order: { type: Number, default: 0 },
 });
 
@@ -27,6 +33,11 @@ const interviewSchema = new mongoose.Schema(
     resumeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Resume',
+      default: null,
+    },
+    candidateId: {
+      type: String,
+      trim: true,
       default: null,
     },
     jobTitle: {

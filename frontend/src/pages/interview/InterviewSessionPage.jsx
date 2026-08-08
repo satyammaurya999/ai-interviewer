@@ -57,6 +57,8 @@ export default function InterviewSessionPage() {
     setLiveFeedback('');
     setIsReceivingFeedback(true);
     socket?.emit("live_answer", {
+      sessionId: session?._id,
+      questionId: currentQuestion?._id,
       questionText: currentQuestion?.questionText,
       expectedKeywords: currentQuestion?.expectedKeywords,
       answerText: answerText.trim()
