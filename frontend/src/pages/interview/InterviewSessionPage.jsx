@@ -33,7 +33,7 @@ export default function InterviewSessionPage() {
   const [isReceivingFeedback, setIsReceivingFeedback] = useState(false);
 
   useEffect(() => {
-    const s = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', { withCredentials: true });
+    const s = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', { withCredentials: true });
     setSocket(s);
     
     s.on("ai_chunk", (chunk) => {
