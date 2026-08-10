@@ -50,9 +50,6 @@ export default function LandingPage() {
             <Link to="/jobs" className="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-2">
               <Briefcase className="w-4 h-4" />
               Jobs
-              <span className="text-[10px] bg-brand-600/20 text-brand-400 px-1.5 py-0.5 rounded border border-brand-500/20 font-bold uppercase tracking-tight">
-                Soon
-              </span>
             </Link>
           </div>
 
