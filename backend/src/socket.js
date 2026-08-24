@@ -4,6 +4,7 @@ require("dotenv").config();
 const SystemPrompt = require('./models/SystemPrompt.model');
 const Session = require('./models/Session.model');
 const Interview = require('./models/Interview.model');
+const { DEFAULT_GROQ_MODEL } = require('./config/aiModel');
 const { getCandidateProfile } = require('./services/candidateProfile.service');
 const {
   loadCurriculum,
@@ -170,7 +171,7 @@ Expected Keywords: ${effectiveKeywords.join(', ') || 'None'}
 Candidate Answer: ${answerText || '(silence)'}`;
 
     const stream = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: DEFAULT_GROQ_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.5,
       max_tokens: 150,

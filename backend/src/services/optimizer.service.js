@@ -1,4 +1,5 @@
 const groq = require('../config/groq');
+const { DEFAULT_GROQ_MODEL } = require('../config/aiModel');
 
 /**
  * Optimize a search query for vector search using Groq LLM
@@ -33,7 +34,7 @@ Optimized query only.`;
 
   try {
     const response = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: DEFAULT_GROQ_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },

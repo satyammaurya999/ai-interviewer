@@ -41,7 +41,7 @@ export default function AdminSettingsPage() {
       rateLimits: { windowMs: 15 * 60 * 1000, maxRequests: 100 },
     },
     ai: {
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       temperature: 0.5,
       maxTokens: 1024,
     },

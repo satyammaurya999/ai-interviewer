@@ -7,6 +7,7 @@
 
 const SystemSetting = require('../models/SystemSetting.model');
 const AppError      = require('../utils/AppError');
+const { DEFAULT_GROQ_MODEL, normalizeGroqModel } = require('../config/aiModel');
 
 // Fetch settings (with auto-seed fallback)
 const getOrCreateSettings = async () => {
@@ -28,7 +29,7 @@ const getOrCreateSettings = async () => {
         rateLimits: { windowMs: 15 * 60 * 1000, maxRequests: 100 },
       },
       ai: {
-        model: 'llama-3.3-70b-versatile',
+        model: DEFAULT_GROQ_MODEL,
         temperature: 0.5,
         maxTokens: 1024,
       },
@@ -45,6 +46,12 @@ const getOrCreateSettings = async () => {
       },
     });
   }
+  const normalizedModel = normalizeGroqModel(settings.ai?.model);
+  if (settings.ai?.model !== normalizedModel) {
+    settings.ai.model = normalizedModel;
+    await settings.save();
+  }
+
   return settings;
 };
 
@@ -92,7 +99,7 @@ exports.saveSettings = async (req, res) => {
 
   // Merge AI parameters
   if (ai) {
-    if (ai.model !== undefined)       settings.ai.model       = ai.model;
+    if (ai.model !== undefined)       settings.ai.model       = normalizeGroqModel(ai.model);
     if (ai.temperature !== undefined) settings.ai.temperature = parseFloat(ai.temperature) || 0.5;
     if (ai.maxTokens !== undefined)   settings.ai.maxTokens   = parseInt(ai.maxTokens) || 1024;
   }

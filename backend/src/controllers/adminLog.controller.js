@@ -9,6 +9,7 @@
 const AuditLog = require('../models/AuditLog.model');
 const User     = require('../models/User.model');
 const AppError = require('../utils/AppError');
+const { DEFAULT_GROQ_MODEL } = require('../config/aiModel');
 
 // ─── Self-Healing Mock Logs Seeder ────────────────────────────────
 const seedMockLogs = async () => {
@@ -48,8 +49,8 @@ const seedMockLogs = async () => {
       action: 'groq_completion_success',
       status: 'success',
       userId: triggerUser,
-      details: 'Groq Llama-3.3 prompt execution processed for candidate Resume parser.',
-      metadata: { model: 'llama-3.3-70b-versatile', latencyMs: 840, promptTokens: 320, completionTokens: 120 },
+      details: 'Groq prompt execution processed for candidate Resume parser.',
+      metadata: { model: DEFAULT_GROQ_MODEL, latencyMs: 840, promptTokens: 320, completionTokens: 120 },
     },
     {
       category: 'payment',

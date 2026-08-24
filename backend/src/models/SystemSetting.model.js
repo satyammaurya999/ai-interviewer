@@ -6,6 +6,7 @@
  */
 
 const mongoose = require('mongoose');
+const { DEFAULT_GROQ_MODEL } = require('../config/aiModel');
 
 const systemSettingSchema = new mongoose.Schema(
   {
@@ -36,7 +37,7 @@ const systemSettingSchema = new mongoose.Schema(
       },
     },
     ai: {
-      model: { type: String, default: 'llama-3.3-70b-versatile' },
+      model: { type: String, default: DEFAULT_GROQ_MODEL },
       temperature: { type: Number, default: 0.5, min: 0, max: 2.0 },
       maxTokens: { type: Number, default: 1024 },
     },

@@ -10,7 +10,7 @@
 - runs real-time follow-up conversations over Socket.io,
 - and produces a structured, curriculum-day-aware final report.
 
-**One-paragraph system summary:** A React (Vite) frontend talks to an Express backend. The backend uses Groq's `llama-3.3-70b-versatile` for all generation/evaluation, a local Hugging Face `all-MiniLM-L6-v2` model for embeddings, an in-process RAG pipeline for retrieval, MongoDB (Mongoose) for persistence, Cloudinary for resume storage, and Redis for job-cache (optional). Interviews can run either through the authenticated REST + Socket.io flow or through a challenge-required unauthenticated `POST /api/interview` adapter that is keyed by a caller-supplied `sessionId`.
+**One-paragraph system summary:** A React (Vite) frontend talks to an Express backend. The backend uses Groq's `openai/gpt-oss-120b` for all generation/evaluation, a local Hugging Face `all-MiniLM-L6-v2` model for embeddings, an in-process RAG pipeline for retrieval, MongoDB (Mongoose) for persistence, Cloudinary for resume storage, and Redis for job-cache (optional). Interviews can run either through the authenticated REST + Socket.io flow or through a challenge-required unauthenticated `POST /api/interview` adapter that is keyed by a caller-supplied `sessionId`.
 
 ---
 
@@ -69,7 +69,7 @@ flowchart TB
         ADAPT["HTTP Adapter<br/>interviewChat.service.js"]
     end
 
-    LLM["Groq LLM<br/>llama-3.3-70b-versatile"]
+    LLM["Groq LLM<br/>openai/gpt-oss-120b"]
     EMB["Local Embeddings<br/>all-MiniLM-L6-v2"]
 
     CP --> PLAN
@@ -602,7 +602,7 @@ curl -X POST http://localhost:5000/api/interview \
 
 ## Project at a glance
 
-- **Stack:** Node.js + Express, MongoDB (Mongoose), Socket.io, Groq (`llama-3.3-70b-versatile`), local Hugging Face embeddings (`all-MiniLM-L6-v2`), React 18 + Vite, Zustand, Tailwind.
+- **Stack:** Node.js + Express, MongoDB (Mongoose), Socket.io, Groq (`openai/gpt-oss-120b`), local Hugging Face embeddings (`all-MiniLM-L6-v2`), React 18 + Vite, Zustand, Tailwind.
 - **Core value:** personalized, curriculum-grounded, adaptively-probed mock interviews with structured, day-level feedback.
 - **Two interview paths:** authenticated REST + Socket.io sessions, and the unauthenticated `POST /api/interview` adapter keyed by `sessionId`.
 - **Constraints honored:** ≥8 questions, ≥4 curriculum days, no-auth adapter, exact `{ summary, strengths, gaps, next }` feedback contract.

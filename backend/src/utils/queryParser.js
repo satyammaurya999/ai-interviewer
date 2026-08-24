@@ -244,7 +244,7 @@ function ambiguityScore(raw, parsed) {
  * Call Groq to parse an ambiguous query into the canonical shape.
  * Only invoked when ambiguityScore ≥ AMBIGUITY_THRESHOLD.
  *
- * Uses llama-3.3-70b-versatile at temperature=0 for deterministic JSON.
+ * Uses the configured Groq model at temperature=0 for deterministic JSON.
  *
  * @param {string} query
  * @param {object} partial - Partial output from ruleBasedParse (may have some fields)
@@ -253,8 +253,10 @@ function ambiguityScore(raw, parsed) {
 async function llmFallbackParse(query, partial = {}) {
   // Lazy-require so the module is still importable without Groq configured
   let groq;
+  let DEFAULT_GROQ_MODEL;
   try {
     groq = require('../config/groq');
+    ({ DEFAULT_GROQ_MODEL } = require('../config/aiModel'));
   } catch {
     // Groq not configured — return partial result with a flag
     return { ...partial, _llmSkipped: true };
@@ -285,7 +287,7 @@ Return the complete JSON object now:`;
 
   try {
     const response = await groq.chat.completions.create({
-      model          : 'llama-3.3-70b-versatile',
+      model          : DEFAULT_GROQ_MODEL,
       messages       : [
         { role: 'system', content: systemPrompt },
         { role: 'user',   content: userPrompt   },
