@@ -254,9 +254,10 @@ async function llmFallbackParse(query, partial = {}) {
   // Lazy-require so the module is still importable without Groq configured
   let groq;
   let DEFAULT_GROQ_MODEL;
+  let withGroqReasoningOptions;
   try {
     groq = require('../config/groq');
-    ({ DEFAULT_GROQ_MODEL } = require('../config/aiModel'));
+    ({ DEFAULT_GROQ_MODEL, withGroqReasoningOptions } = require('../config/aiModel'));
   } catch {
     // Groq not configured — return partial result with a flag
     return { ...partial, _llmSkipped: true };
@@ -286,7 +287,7 @@ ${JSON.stringify(partial, null, 2)}
 Return the complete JSON object now:`;
 
   try {
-    const response = await groq.chat.completions.create({
+    const response = await groq.chat.completions.create(withGroqReasoningOptions({
       model          : DEFAULT_GROQ_MODEL,
       messages       : [
         { role: 'system', content: systemPrompt },
@@ -295,7 +296,7 @@ Return the complete JSON object now:`;
       temperature    : 0,
       max_tokens     : 300,
       response_format: { type: 'json_object' },
-    });
+    }));
 
     const content = response.choices[0]?.message?.content;
     if (!content) throw new Error('Empty LLM response');

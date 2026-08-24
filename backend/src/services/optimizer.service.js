@@ -1,5 +1,5 @@
 const groq = require('../config/groq');
-const { DEFAULT_GROQ_MODEL } = require('../config/aiModel');
+const { DEFAULT_GROQ_MODEL, withGroqReasoningOptions } = require('../config/aiModel');
 
 /**
  * Optimize a search query for vector search using Groq LLM
@@ -33,7 +33,7 @@ Output:
 Optimized query only.`;
 
   try {
-    const response = await groq.chat.completions.create({
+    const response = await groq.chat.completions.create(withGroqReasoningOptions({
       model: DEFAULT_GROQ_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -41,7 +41,7 @@ Optimized query only.`;
       ],
       temperature: 0.3,
       max_tokens: 256,
-    });
+    }));
 
     const content = response.choices[0]?.message?.content?.trim();
     // Strip quotes if AI returned them

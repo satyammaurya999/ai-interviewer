@@ -1,5 +1,5 @@
 const groq = require('../config/groq');
-const { DEFAULT_GROQ_MODEL } = require('../config/aiModel');
+const { DEFAULT_GROQ_MODEL, withGroqReasoningOptions } = require('../config/aiModel');
 const { extractContextViaRAG, buildSemanticChunks, createAndStoreEmbeddings, retrieveContextForTopic } = require('./rag.service');
 const { optimizeQuery } = require('./optimizer.service');
 const SystemPrompt = require('../models/SystemPrompt.model');
@@ -293,7 +293,7 @@ Return structured JSON exactly in this format:
   ]
 }`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -302,7 +302,7 @@ Return structured JSON exactly in this format:
     temperature: 0.7,
     max_tokens: 4096,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   if (!content) throw new Error('No response from AI model.');
@@ -328,7 +328,7 @@ Re-generate the FULL final interview set (correcting this) in the exact same JSO
     const rejectionPrompt = `${rejectNote}\n\n${userPrompt}`;
 
     try {
-      const retry = await groq.chat.completions.create({
+      const retry = await groq.chat.completions.create(withGroqReasoningOptions({
         model: DEFAULT_GROQ_MODEL,
         messages: [
           { content: systemPrompt, role: 'system' },
@@ -337,7 +337,7 @@ Re-generate the FULL final interview set (correcting this) in the exact same JSO
         temperature: 0.7,
         max_tokens: 4096,
         response_format: { type: 'json_object' },
-      });
+      }));
 
       const retryContent = retry.choices[0]?.message?.content;
       if (retryContent) {
@@ -390,13 +390,13 @@ Return valid JSON exactly in this format:
     answerText: answerText || '(No answer provided)',
   });
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.4,
     max_tokens: 512,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   return JSON.parse(content || '{}');
@@ -484,13 +484,13 @@ Return valid JSON exactly in this format:
     followUpSummary: followUpSummary || 'No live follow-up exchanges recorded.',
   });
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.5,
     max_tokens: 2048,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   return JSON.parse(content || '{}');
@@ -534,7 +534,7 @@ ${resumeText || 'Not provided'}
 JOB_DESCRIPTION:
 ${jdText || 'Not provided'}`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -543,7 +543,7 @@ ${jdText || 'Not provided'}`;
     temperature: 0.2,
     max_tokens: 2048,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   if (!content) throw new Error('No response from AI parser.');
@@ -595,7 +595,7 @@ ${JSON.stringify(parsedJdData, null, 2)}
 Output:
 Numbered list of questions.`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -603,7 +603,7 @@ Numbered list of questions.`;
     ],
     temperature: 0.6,
     max_tokens: 1024,
-  });
+  }));
 
   return response.choices[0]?.message?.content?.trim() || 'Failed to generate questions.';
 };
@@ -647,7 +647,7 @@ Return JSON exactly as:
   "improvement_suggestions": []
 }`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -656,7 +656,7 @@ Return JSON exactly as:
     temperature: 0.2,
     max_tokens: 1024,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   try {
@@ -697,7 +697,7 @@ ${answer}
 Output:
 Single follow-up question.`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -705,7 +705,7 @@ Single follow-up question.`;
     ],
     temperature: 0.5,
     max_tokens: 512,
-  });
+  }));
 
   return response.choices[0]?.message?.content?.trim() || 'No follow-up generated.';
 };
@@ -744,7 +744,7 @@ Return JSON exactly as:
   ]
 }`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -753,7 +753,7 @@ Return JSON exactly as:
     temperature: 0.3,
     max_tokens: 2048,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   try {
@@ -788,7 +788,7 @@ ${retrievedChunks}
 Response:
 ${modelOutput}`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -797,7 +797,7 @@ ${modelOutput}`;
     temperature: 0.1,
     max_tokens: 1024,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   try {
@@ -856,7 +856,7 @@ Always respond with a valid JSON object containing a "questions" key pointing to
 Job Description:
 ${jobDescription}`;
 
-  const response = await groq.chat.completions.create({
+  const response = await groq.chat.completions.create(withGroqReasoningOptions({
     model: DEFAULT_GROQ_MODEL,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -864,7 +864,7 @@ ${jobDescription}`;
     ],
     temperature: 0.7,
     response_format: { type: 'json_object' },
-  });
+  }));
 
   const content = response.choices[0]?.message?.content;
   if (!content) throw new Error('Failed to generate questions.');
