@@ -75,6 +75,12 @@ app.use(cors({
 }));
 
 
+// ─── Health Check (Before Rate Limiting) ─────────────────────────
+// Placed here so Render's health checks do not trigger the rate limit and fail.
+app.get('/api/health', (_req, res) =>
+  res.status(200).json({ success: true, message: 'OK', timestamp: new Date().toISOString() })
+);
+
 // ─── Rate Limiting ─────────────────────────────────────────────────
 app.use('/api/', rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
@@ -92,11 +98,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
-
-// ─── Health Check ──────────────────────────────────────────────────
-app.get('/api/health', (_req, res) =>
-  res.status(200).json({ success: true, message: 'OK', timestamp: new Date().toISOString() })
-);
 
 // ─── API Routes ────────────────────────────────────────────────────
 app.use('/api/auth',       authRoutes);
