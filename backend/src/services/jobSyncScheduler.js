@@ -1,6 +1,7 @@
 'use strict';
 
 const cron = require('node-cron');
+const mongoose = require('mongoose');
 const { syncJobs } = require('./jobSyncService');
 const logger = require('../config/logger');
 
@@ -11,6 +12,11 @@ let isSyncing = false;
  * Runs the sync pipeline and logs specific metrics.
  */
 const runScheduledSync = async () => {
+  if (mongoose.connection.readyState !== 1) {
+    logger.warn('⚠️ Job Sync Scheduler: MongoDB disconnected. Skipping sync...');
+    return;
+  }
+
   if (isSyncing) {
     logger.warn('🔄 Job Sync Scheduler: Previous sync is still running. Skipping...');
     return;

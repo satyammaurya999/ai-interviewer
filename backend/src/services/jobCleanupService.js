@@ -1,6 +1,7 @@
 'use strict';
 
 const cron = require('node-cron');
+const mongoose = require('mongoose');
 const Job = require('../models/Job.model');
 const logger = require('../config/logger');
 
@@ -14,6 +15,11 @@ let isCleaning = false;
  * @returns {Promise<object>} - Cleanup metrics
  */
 const runJobCleanup = async () => {
+  if (mongoose.connection.readyState !== 1) {
+    logger.warn('⚠️ Job Cleanup Service: MongoDB disconnected. Skipping cleanup...');
+    return;
+  }
+
   if (isCleaning) {
     logger.warn('🧹 Job Cleanup Service: Previous cleanup run is still in progress. Skipping...');
     return;
@@ -51,7 +57,6 @@ const runJobCleanup = async () => {
 
   } catch (error) {
     logger.error(`❌ Job Cleanup Service Error: ${error.message}`);
-    throw error;
   } finally {
     isCleaning = false;
   }
