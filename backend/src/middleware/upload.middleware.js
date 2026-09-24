@@ -7,7 +7,6 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'ai-interview/resumes',
-    allowed_formats: ['pdf', 'doc', 'docx'],
     resource_type: 'raw',
     use_filename: true,
     unique_filename: true,

@@ -8,25 +8,25 @@
 
 require('express-async-errors');
 
-const express    = require('express');
-const cors       = require('cors');
-const helmet     = require('helmet');
-const morgan     = require('morgan');
-const rateLimit  = require('express-rate-limit');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const compression = require('compression');
 
-const connectDB      = require('./config/db');
-const errorHandler   = require('./middleware/errorHandler');
+const connectDB = require('./config/db');
+const errorHandler = require('./middleware/errorHandler');
 
 // Route Imports
-const authRoutes      = require('./routes/auth.routes');
-const userRoutes      = require('./routes/user.routes');
-const resumeRoutes    = require('./routes/resume.routes');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
+const resumeRoutes = require('./routes/resume.routes');
 const interviewRoutes = require('./routes/interview.routes');
-const sessionRoutes   = require('./routes/session.routes');
+const sessionRoutes = require('./routes/session.routes');
 const interviewChatRoutes = require('./routes/interviewChat.routes');
-const jobsRoutes      = require('./routes/jobs.routes');
-const adminRoutes     = require('./routes/admin.routes');
+const jobsRoutes = require('./routes/jobs.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
@@ -57,9 +57,9 @@ app.use(cors({
     const allowed = process.env.CLIENT_URL || 'http://localhost:5173';
     // Let local dev and exact matches through instantly
     if (!origin || origin === allowed) return callback(null, true);
-    
+
     // Normalize both for comparison (remove trailing slashes)
-    const normalizedOrigin  = origin.replace(/\/$/, '');
+    const normalizedOrigin = origin.replace(/\/$/, '');
     const normalizedAllowed = allowed.replace(/\/$/, '');
 
     if (normalizedOrigin === normalizedAllowed) {
@@ -75,18 +75,15 @@ app.use(cors({
 }));
 
 
-// ─── Health Check (Before Rate Limiting) ─────────────────────────
-// Placed here so Render's health checks do not trigger the rate limit and fail.
 app.get('/api/health', (_req, res) =>
   res.status(200).json({ success: true, message: 'OK', timestamp: new Date().toISOString() })
 );
 
-// ─── Rate Limiting ─────────────────────────────────────────────────
 app.use('/api/', rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max:      parseInt(process.env.RATE_LIMIT_MAX)        || 100,
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
   standardHeaders: true,
-  legacyHeaders:   false,
+  legacyHeaders: false,
   message: { success: false, message: 'Too many requests. Please try again later.' },
 }));
 
@@ -100,16 +97,16 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // ─── API Routes ────────────────────────────────────────────────────
-app.use('/api/auth',       authRoutes);
-app.use('/api/users',      userRoutes);
-app.use('/api/resumes',    resumeRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/resumes', resumeRoutes);
 app.use('/api/interviews', interviewRoutes);
-app.use('/api/sessions',   sessionRoutes);
-app.use('/api/jobs',       jobsRoutes);
-app.use('/api/admin',      adminRoutes);
+app.use('/api/sessions', sessionRoutes);
+app.use('/api/jobs', jobsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Challenge adapter: sessionId-keyed conversational interview (no auth)
-app.use('/api/interview',  interviewChatRoutes);
+app.use('/api/interview', interviewChatRoutes);
 
 // ─── 404 Catch-all ────────────────────────────────────────────────
 app.use('*', (req, res) =>
